@@ -20,7 +20,7 @@ export default async function Home() {
     <div>
       <Header />
       <PageContainer>
-        <QuickSearch/>
+        <QuickSearch />
         <Image
           src={banner}
           alt="Agende nos melhores"
