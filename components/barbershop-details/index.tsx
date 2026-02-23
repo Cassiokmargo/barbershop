@@ -20,12 +20,12 @@ const BarbershopDetails = ({ barbershop }: BarbershopDetailsProps) => {
         {barbershop.name}
       </h1>
       <p className="text-muted-foreground mb-8 text-sm">{barbershop.address}</p>
-      <hr className="-ml-5 w-97.5"/>
+      <hr className="-ml-5 w-97.5" />
       <div className="my-6">
         <PageSectionTitle>Sobre nós</PageSectionTitle>
         <p className="text-sm">{barbershop.description}</p>
       </div>
-       <hr className="-ml-5 w-97.5"/>
+      <hr className="-ml-5 w-97.5" />
     </div>
   );
 };

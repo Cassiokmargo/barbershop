@@ -39,32 +39,34 @@ const BarbershopPage = async ({ params }: PageProps) => {
         </div>
       </div>
 
-      <PageContainer>
-        {/* Barbershop Info */}
-        <BarbershopDetails barbershop={barbershop} />
+      <div className="bg-background relative z-10 -mt-8 rounded-t-3xl">
+        <PageContainer>
+          {/* Barbershop Info */}
+          <BarbershopDetails barbershop={barbershop} />
 
-        {/* Services */}
-        <div className="mt-6">
-          <PageSectionTitle>Serviços</PageSectionTitle>
-          <PageSectionContent>
-            <div className="mt-3 grid grid-cols-1 gap-3">
-              {barbershop.services.map((service) => (
-                <ServiceItem key={service.id} service={service} />
-              ))}
-            </div>
-          </PageSectionContent>
-        </div>
-              <hr className="-ml-5 w-97.5"/>
-        <PageSectionTitle>Contato</PageSectionTitle>
-        <div className="flex items-center gap-2">
-          <Smartphone />
-          {barbershop.phones?.[0]}
-
-          <div className="ml-29">
-            <CopyPhoneButton phone={barbershop.phones?.[0] || ""} />
+          {/* Services */}
+          <div className="mt-6">
+            <PageSectionTitle>Serviços</PageSectionTitle>
+            <PageSectionContent>
+              <div className="mt-3 grid grid-cols-1 gap-3">
+                {barbershop.services.map((service) => (
+                  <ServiceItem key={service.id} service={service} />
+                ))}
+              </div>
+            </PageSectionContent>
           </div>
-        </div>
-      </PageContainer>
+          <hr className="-ml-5 w-97.5" />
+          <PageSectionTitle>Contato</PageSectionTitle>
+          <div className="flex items-center gap-2">
+            <Smartphone />
+            {barbershop.phones?.[0]}
+
+            <div className="ml-29">
+              <CopyPhoneButton phone={barbershop.phones?.[0] || ""} />
+            </div>
+          </div>
+        </PageContainer>
+      </div>
     </div>
   );
 };
