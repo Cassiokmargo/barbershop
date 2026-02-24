@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 const categories = [
   { name: "Cabelo", icon: Scissors, search: "cabelo" },
@@ -35,14 +37,22 @@ const categories = [
   { name: "Progressiva", icon: Wand2, search: "progressiva" },
 ];
 
-const user = {
-  name: "João",
-  email: "joao@example.com",
-  avatar: "/avatar.jpg",
-};
-
 export function Menu() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Hardcoded for now, toggle for testing
+  const { data: session } = authClient.useSession()
+  const handleLogin = async () => {
+    const { error } = await authClient.signIn.social({
+      provider: "google",
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+  };
+
+  const handleLogout = async () => {
+
+  }
+  const isLoggedIn  = !!session?.user
 
   return (
     <Sheet>
@@ -61,18 +71,18 @@ export function Menu() {
           {isLoggedIn ? (
             <div className="flex items-center gap-3 p-5">
               <Avatar size="lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                <AvatarImage src={session.user.image ?? ""} alt={session.user.name} />
+                <AvatarFallback>{session.user.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold">{user.name}</p>
-                <p className="text-muted-foreground text-sm">{user.email}</p>
+                <p className="font-semibold">{session.user.name}</p>
+                <p className="text-muted-foreground text-sm">{session.user.email}</p>
               </div>
             </div>
           ) : (
             <div className="flex items-center justify-between p-5">
               <span className="font-bold">Olá. Faça seu login!</span>
-              <Button className="rounded-full text-xs">
+              <Button className="rounded-full text-xs" onClick={handleLogin}>
                 Login <LogIn />
               </Button>
             </div>
@@ -113,12 +123,14 @@ export function Menu() {
             </div>
           </div>
           <hr />
+         {isLoggedIn && (
           <div className="pl-3">
-            <Button variant="ghost" className="text-gray-500">
+            <Button variant="ghost" className="text-gray-500" onClick={handleLogout}>
               <LogOut />
               Sair da conta
             </Button>
           </div>
+         )}
         </div>
       </SheetContent>
     </Sheet>
