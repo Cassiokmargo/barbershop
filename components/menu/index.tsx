@@ -24,7 +24,6 @@ import {
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 
@@ -38,7 +37,7 @@ const categories = [
 ];
 
 export function Menu() {
-  const { data: session } = authClient.useSession()
+  const { data: session } = authClient.useSession();
   const handleLogin = async () => {
     const { error } = await authClient.signIn.social({
       provider: "google",
@@ -50,9 +49,17 @@ export function Menu() {
   };
 
   const handleLogout = async () => {
+    const { error } = await authClient.signOut();
 
-  }
-  const isLoggedIn  = !!session?.user
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    else {
+      toast.success("Usuário deslogado!")
+    }
+  };
+  const isLoggedIn = !!session?.user;
 
   return (
     <Sheet>
@@ -71,12 +78,17 @@ export function Menu() {
           {isLoggedIn ? (
             <div className="flex items-center gap-3 p-5">
               <Avatar size="lg">
-                <AvatarImage src={session.user.image ?? ""} alt={session.user.name} />
+                <AvatarImage
+                  src={session.user.image ?? ""}
+                  alt={session.user.name}
+                />
                 <AvatarFallback>{session.user.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
                 <p className="font-semibold">{session.user.name}</p>
-                <p className="text-muted-foreground text-sm">{session.user.email}</p>
+                <p className="text-muted-foreground text-sm">
+                  {session.user.email}
+                </p>
               </div>
             </div>
           ) : (
@@ -122,15 +134,21 @@ export function Menu() {
               ))}
             </div>
           </div>
-          <hr />
-         {isLoggedIn && (
-          <div className="pl-3">
-            <Button variant="ghost" className="text-gray-500" onClick={handleLogout}>
-              <LogOut />
-              Sair da conta
-            </Button>
-          </div>
-         )}
+          {isLoggedIn && ( 
+            <div>
+              <hr />
+              <div className="pl-3 pt-4">
+                <Button
+                  variant="ghost"
+                  className="text-gray-500"
+                  onClick={handleLogout}
+                >
+                  <LogOut />
+                  Sair da conta
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </SheetContent>
     </Sheet>
