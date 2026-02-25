@@ -3,12 +3,19 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import type { BarbershopServiceModel } from "@/generated/prisma/models";
 import { Button } from "../ui/button";
+import BookingSheet from "../booking-sheet";
 
 interface ServiceItemProps {
   service: BarbershopServiceModel;
+  barbershopId: string;
+  barbershopName: string;
 }
 
-const ServiceItem = ({ service }: ServiceItemProps) => {
+const ServiceItem = ({
+  service,
+  barbershopId,
+  barbershopName,
+}: ServiceItemProps) => {
   return (
     <Card className="py-0">
       <CardContent className="p-3">
@@ -32,7 +39,13 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
                 R$ {(service.priceInCents / 100).toFixed(2)}
               </span>
               {/* Reserve Button */}
-              <Button className="w-fit rounded-full">Reservar</Button>
+              <BookingSheet
+                service={service}
+                barbershopId={barbershopId}
+                barbershopName={barbershopName}
+              >
+                <Button className="w-fit rounded-full">Reservar</Button>
+              </BookingSheet>
             </div>
           </div>
         </div>

@@ -13,6 +13,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
 model Barbershop {
   id          String              @id @default(uuid())
   name        String
@@ -21,6 +27,7 @@ model Barbershop {
   imageUrl    String
   phones      String[]
   services    BarbershopService[]
+  bookings    Booking[]
 }
 
 model BarbershopService {
@@ -31,6 +38,20 @@ model BarbershopService {
   priceInCents Int
   barbershopId String
   barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+  bookings     Booking[]
+}
+
+model Booking {
+  id           String        @id @default(cuid())
+  userId       String
+  serviceId    String
+  barbershopId String
+  date         DateTime
+  time         String
+  status       BookingStatus @default(PENDING)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service      BarbershopService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  barbershop   Barbershop    @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -43,6 +64,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  bookings      Booking[]
 
   @@unique([email])
   @@map("user")

@@ -50,7 +50,12 @@ const BarbershopPage = async ({ params }: PageProps) => {
             <PageSectionContent>
               <div className="mt-3 grid grid-cols-1 gap-3">
                 {barbershop.services.map((service) => (
-                  <ServiceItem key={service.id} service={service} />
+                  <ServiceItem
+                    key={service.id}
+                    service={service}
+                    barbershopId={barbershop.id}
+                    barbershopName={barbershop.name}
+                  />
                 ))}
               </div>
             </PageSectionContent>
