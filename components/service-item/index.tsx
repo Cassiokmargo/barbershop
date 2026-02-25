@@ -4,6 +4,7 @@ import Image from "next/image";
 import type { BarbershopServiceModel } from "@/generated/prisma/models";
 import { Button } from "../ui/button";
 import BookingSheet from "../booking-sheet";
+import { formatCurrency } from "@/lib/utils";
 
 interface ServiceItemProps {
   service: BarbershopServiceModel;
@@ -36,7 +37,7 @@ const ServiceItem = ({
             </div>
             <div className="flex items-center justify-between">
               <span className="w-fit font-bold">
-                R$ {(service.priceInCents / 100).toFixed(2)}
+                {formatCurrency(service.priceInCents)}
               </span>
               {/* Reserve Button */}
               <BookingSheet

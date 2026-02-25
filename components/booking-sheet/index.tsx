@@ -15,6 +15,7 @@ import type { BarbershopServiceModel } from "@/generated/prisma/models";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatCurrency } from "@/lib/utils";
 
 interface BookingSheetProps {
   service: BarbershopServiceModel;
@@ -96,7 +97,7 @@ const BookingSheet = ({
   return (
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent side="right" className="min-h-dvh w-90 sm:w-100">
+      <SheetContent side="right" className="w-90 sm:w-100">
         <SheetHeader>
           <SheetTitle>Fazer Reserva</SheetTitle>
         </SheetHeader>
@@ -112,55 +113,53 @@ const BookingSheet = ({
           />
           <hr className="my-5" />
           {selectedDate && (
-            <div className="mt-6 px-5">
-              <h3 className="mb-3 text-sm font-bold">Horários Disponíveis</h3>
-              <div className="flex gap-2 overflow-x-auto pb-3">
-                {availableTimes.map((time) => (
-                  <Button
-                    key={time}
-                    className="rounded-full"
-                    variant={selectedTime === time ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedTime(time)}
-                  >
-                    {time}
-                  </Button>
-                ))}
+            <div>
+              <div className="mt-6 px-5">
+                <h3 className="mb-3 text-sm font-bold">Horários Disponíveis</h3>
+                <div className="flex gap-2 overflow-x-auto pb-3">
+                  {availableTimes.map((time) => (
+                    <Button
+                      key={time}
+                      className="rounded-full"
+                      variant={selectedTime === time ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setSelectedTime(time)}
+                    >
+                      {time}
+                    </Button>
+                  ))}
+                </div>
               </div>
+              <hr className="my-6" />
             </div>
           )}
-          <hr className="my-6" />
           {selectedDate && selectedTime && (
-            <div className="py-6 px-5">
+            <div className="px-5 py-6">
               <Card>
                 <CardHeader className="flex w-full justify-between">
                   <h4 className="font-semibold">{service.name}</h4>
                   <p className="mt-2 text-sm font-bold">
-                    R$ {(service.priceInCents / 100).toFixed(2)}
+                    {formatCurrency(service.priceInCents)}
                   </p>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-5 p-3 py-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-muted-foreground text-sm">
-                      Data
+                    <p className="text-muted-foreground text-sm">Data</p>
+                    <p className="text-muted-background">
+                      {format(selectedDate, "d 'de' MMMM", { locale: ptBR })}
                     </p>
-                      <p className="text-muted-background ">
-                        {format(selectedDate, "d 'de' MMMM", { locale: ptBR })}
-                      </p>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <p className="text-muted-foreground text-sm">
-                      Horário
-                    </p>
-                      <p className="text-muted-background">{selectedTime}</p>
+                    <p className="text-muted-foreground text-sm">Horário</p>
+                    <p className="text-muted-background">{selectedTime}</p>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <p className="text-muted-foreground flex justify-between text-sm">
                       Barbearia
                     </p>
-                      <p className="text-muted-background ">{barbershopName}</p>
+                    <p className="text-muted-background">{barbershopName}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -168,7 +167,7 @@ const BookingSheet = ({
           )}
           <div className="flex px-5">
             <Button
-              className="mt-6 w-full rounded-full"
+              className="w-full rounded-full"
               disabled={!selectedDate || !selectedTime}
               onClick={handleConfirm}
             >
