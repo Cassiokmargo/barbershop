@@ -50,16 +50,16 @@ model Booking {
   user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   serviceId    String
   service      BarbershopService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  date         DateTime
-  cancelledAt  DateTime?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  date         DateTime          @db.Timestamptz()
+  cancelledAt  DateTime?         @db.Timestamptz()
+  createdAt    DateTime          @default(now()) @db.Timestamptz()
+  updatedAt    DateTime          @updatedAt @db.Timestamptz()
 }
 
 model User {
   id            String    @id
   name          String
-  email         String
+  email         String 
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())

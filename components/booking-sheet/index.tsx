@@ -16,6 +16,9 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { formatCurrency } from "@/lib/utils";
+import { createBooking } from "@/actions/create-booking";
+import { useAction } from "next-safe-action/hooks";
+import { Loader2 } from "lucide-react";
 
 interface BookingSheetProps {
   service: BarbershopServiceModel;
@@ -34,6 +37,8 @@ const BookingSheet = ({
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
   const [unavailableTimes, setUnavailableTimes] = useState<string[]>([]);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const { executeAsync: executeCreateBooking, isPending: isCreatingBooking } =
+    useAction(createBooking);
 
   const generateTimes = () => {
     const times = [];
@@ -65,33 +70,33 @@ const BookingSheet = ({
     setSelectedTime(undefined);
   }, [selectedDate, service.id]);
 
-  const handleConfirm = async () => {
-    if (!selectedDate || !selectedTime) return;
-
-    try {
-      const res = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          serviceId: service.id,
-          barbershopId,
-          date: selectedDate.toISOString().split("T")[0],
-          time: selectedTime,
-        }),
-      });
-
-      if (res.ok) {
-        toast.success("Reserva criada com sucesso!");
-        setSheetOpen(false);
-        setSelectedDate(undefined);
-        setSelectedTime(undefined);
-      } else {
-        const error = await res.json();
-        toast.error(error.error || "Erro ao criar reserva");
-      }
-    } catch {
-      toast.error("Erro ao criar reserva");
+  const handleConfirmBooking = async () => {
+    if (!selectedDate || !selectedTime) {
+      return;
     }
+
+    const splittedTime = selectedTime.split(":");
+    const hours = Number(splittedTime[0]);
+    const minutes = Number(splittedTime[1]);
+    const date = new Date(selectedDate);
+    date.setHours(hours, minutes);
+
+    const result = await executeCreateBooking({
+      date,
+      serviceId: service.id,
+    });
+    if (result.validationErrors) {
+      return toast.error(result.validationErrors._errors?.[0]);
+    }
+    if (result.serverError) {
+      return toast.error(
+        "Erro ao criar agendamento! Por favor tente novamente.",
+      );
+    }
+    toast.success("Agendamento criado com sucesso!");
+    setSelectedDate(undefined);
+    setSelectedTime(undefined);
+    setSheetOpen(false);
   };
 
   return (
@@ -168,10 +173,14 @@ const BookingSheet = ({
           <div className="flex px-5">
             <Button
               className="w-full rounded-full"
-              disabled={!selectedDate || !selectedTime}
-              onClick={handleConfirm}
+              disabled={!selectedDate || !selectedTime || isCreatingBooking}
+              onClick={handleConfirmBooking}
             >
-              Confirmar Reserva
+              {isCreatingBooking ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Confirmar Reserva"
+              )}
             </Button>
           </div>
         </div>
